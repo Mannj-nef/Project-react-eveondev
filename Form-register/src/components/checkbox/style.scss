@@ -1,0 +1,5 @@
+.input-checkbox {
+    &:checked + span {
+        background-color: #2979ff;
+    }
+}
