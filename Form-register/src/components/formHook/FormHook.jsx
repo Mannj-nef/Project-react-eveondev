@@ -5,25 +5,42 @@ import * as Yup from "yup";
 import InputHook from "../input/InputHook";
 import RadioHook from "../radio/RadioHook";
 import CheckBox from "../checkbox/CheckBox";
+import DropdownHook from "../dropdown/DropdownHook";
+
+const jobs = [
+  {
+    id: 1,
+    job: "Frontend developer",
+  },
+  {
+    id: 2,
+    job: "Backend developer",
+  },
+  {
+    id: 3,
+    job: "Fullstack developer",
+  },
+];
 
 const schema = Yup.object({
-  //   username: Yup.string()
-  //     .required("Please enter your username")
-  //     .min(2, "Must be 2 characters or more"),
-  //   password: Yup.string()
-  //     .required("Please enter your password")
-  //     .min(2, "Must be 2 characters or more")
-  //     .matches(),
-  //   email: Yup.string()
-  //     .email("please enter validity email")
-  //     .required("Please enter your Email address"),
-  //   gender: Yup.string()
-  //     .required("please choose your gender")
-  //     .oneOf(["male", "female"], "Can only choose male or female"),
+  username: Yup.string()
+    .required("Please enter your username")
+    .min(2, "Must be 2 characters or more"),
+  password: Yup.string()
+    .required("Please enter your password")
+    .min(2, "Must be 2 characters or more")
+    .matches(),
+  email: Yup.string()
+    .email("please enter validity email")
+    .required("Please enter your Email address"),
+  gender: Yup.string()
+    .required("please choose your gender")
+    .oneOf(["male", "female"], "Can only choose male or female"),
+  terms: Yup.boolean("check").required("please choose your gender"),
 });
 
 const FormHook = () => {
-  const { handleSubmit, control, formState, reset } = useForm({
+  const { handleSubmit, control, formState, reset, setValue } = useForm({
     resolver: yupResolver(schema),
   });
   const { errors, isSubmitting } = formState;
@@ -122,11 +139,27 @@ const FormHook = () => {
         )}
       </div>
       <div className="flex flex-col gap-[5px] mt-[15px]">
+        <label className="font-medium text-lg cursor-pointer" htmlFor="email">
+          Are you
+        </label>
+        <div className="flex gap-5">
+          <DropdownHook
+            control={control}
+            name="job"
+            dataJob={jobs}
+            setValue={setValue}
+          ></DropdownHook>
+        </div>
+        {errors?.gender && (
+          <p className="text-[#E74C3C] ">{errors.gender.message}</p>
+        )}
+      </div>
+      <div className="flex flex-col gap-[5px] mt-[15px]">
         <CheckBox name="terms" control={control}>
           <p>I accept the terms and conditions</p>
         </CheckBox>
-        {errors?.gender && (
-          <p className="text-[#E74C3C] ">{errors.gender.message}</p>
+        {errors?.terms && (
+          <p className="text-[#E74C3C] ">{errors.terms.message}</p>
         )}
       </div>
 
