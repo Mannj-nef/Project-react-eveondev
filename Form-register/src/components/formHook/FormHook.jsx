@@ -1,58 +1,49 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as Yup from "yup";
 import InputHook from "../input/InputHook";
 import RadioHook from "../radio/RadioHook";
 import CheckBox from "../checkbox/CheckBox";
 import DropdownHook from "../dropdown/DropdownHook";
+import { schema } from "../../constants/validateYup";
 
 const jobs = [
   {
     id: 1,
     job: "Frontend developer",
+    value: "fe",
   },
   {
     id: 2,
     job: "Backend developer",
+    value: "be",
   },
   {
     id: 3,
     job: "Fullstack developer",
+    value: "fs",
   },
 ];
 
-const schema = Yup.object({
-  username: Yup.string()
-    .required("Please enter your username")
-    .min(2, "Must be 2 characters or more"),
-  password: Yup.string()
-    .required("Please enter your password")
-    .min(2, "Must be 2 characters or more")
-    .matches(),
-  email: Yup.string()
-    .email("please enter validity email")
-    .required("Please enter your Email address"),
-  gender: Yup.string()
-    .required("please choose your gender")
-    .oneOf(["male", "female"], "Can only choose male or female"),
-  terms: Yup.boolean("check").required("please choose your gender"),
-});
-
 const FormHook = () => {
-  const { handleSubmit, control, formState, reset, setValue } = useForm({
+  const { handleSubmit, control, formState, reset, setValue, watch } = useForm({
     resolver: yupResolver(schema),
+    mode: "onChange",
   });
-  const { errors, isSubmitting } = formState;
+  const { errors, isSubmitting, isValid } = formState;
+  const watchGender = watch("gender");
 
   const handleSubmitForm = (values) => {
-    return new Promise((resolver) => {
-      setTimeout(() => {
-        resolver();
-        console.log(values);
-        reset();
-      }, 2000);
-    });
+    if (isValid)
+      return new Promise((resolver) => {
+        setTimeout(() => {
+          resolver();
+          console.log(values);
+          reset({
+            gender: "male",
+          });
+        }, 2000);
+      });
   };
 
   return (
@@ -94,6 +85,7 @@ const FormHook = () => {
           control={control}
           name="password"
           id="password"
+          type="password"
         ></InputHook>
         {errors?.password && (
           <p className="text-[#E74C3C] select-none">
@@ -126,11 +118,13 @@ const FormHook = () => {
             label="Male"
             control={control}
             value="male"
+            checked={watchGender === "male"}
           ></RadioHook>
           <RadioHook
             name="gender"
             label="Female"
             control={control}
+            checked={watchGender === "female"}
             value="female"
           ></RadioHook>
         </div>
@@ -148,11 +142,10 @@ const FormHook = () => {
             name="job"
             dataJob={jobs}
             setValue={setValue}
+            defaultLabel="Select your job"
           ></DropdownHook>
         </div>
-        {errors?.gender && (
-          <p className="text-[#E74C3C] ">{errors.gender.message}</p>
-        )}
+        {errors?.job && <p className="text-[#E74C3C] ">{errors.job.message}</p>}
       </div>
       <div className="flex flex-col gap-[5px] mt-[15px]">
         <CheckBox name="terms" control={control}>

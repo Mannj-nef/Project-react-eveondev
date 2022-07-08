@@ -1,30 +1,27 @@
+import { useField } from "formik";
 import React, { useEffect, useRef, useState } from "react";
-import { useWatch } from "react-hook-form";
 import useClickOutSize from "../../hooks/useClickOutSize";
 import "./style.scss";
 
-const DropdownHook = ({ control, setValue, defaultLabel, ...props }) => {
+const DropdownFormik = ({ label: initLabel, ...props }) => {
+  const [field, meta, helpers] = useField(props);
+  const [label, setlabel] = useState(initLabel);
   const selectJobRef = useRef(null);
   const { isShow, setShow } = useClickOutSize(selectJobRef);
-  const [label, setLable] = useState(defaultLabel);
-
-  const dropdownValue = useWatch({
-    control,
-    defaultValue: "",
-    name: props.name,
-  });
-
-  useEffect(() => {
-    if (dropdownValue === "") {
-      setLable(defaultLabel);
-    }
-  }, [dropdownValue]);
 
   const handleSelectJob = (e) => {
-    setValue(props.name, e.target.dataset.value);
-    setLable(e.target.textContent);
+    setShow(false);
+    const target = e.target;
+    helpers.setValue(target.dataset.value);
+    setlabel(target.textContent);
   };
 
+  console.log("meta", meta);
+  console.log("field", field);
+
+  useEffect(() => {
+    if (field.value === "") setlabel(initLabel);
+  }, [field.value]);
   return (
     <div className="w-full cursor-pointer select-none">
       <div
@@ -34,6 +31,7 @@ const DropdownHook = ({ control, setValue, defaultLabel, ...props }) => {
       >
         {label}
       </div>
+
       {props.dataJob?.map((item) => (
         <div
           className={` w-full mt-[5px] bg-white rounded p-[15px] ${
@@ -46,8 +44,12 @@ const DropdownHook = ({ control, setValue, defaultLabel, ...props }) => {
           {item.job}
         </div>
       ))}
+
+      {meta.touched && meta.error && (
+        <p className="text-[#E74C3C] select-none">{meta.error}</p>
+      )}
     </div>
   );
 };
 
-export default DropdownHook;
+export default DropdownFormik;

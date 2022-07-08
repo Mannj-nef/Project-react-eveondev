@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 export default function useClickOutSize(dome) {
   const [isShow, setShow] = useState(false);
+
   useEffect(() => {
     const handleCkickOutSize = (e) => {
       const target = e.target;
@@ -13,7 +14,7 @@ export default function useClickOutSize(dome) {
     };
     document.addEventListener("click", handleCkickOutSize);
 
-    return () => {};
+    return () => document.removeEventListener("click", handleCkickOutSize);
   }, []);
   return { isShow, setShow };
 }

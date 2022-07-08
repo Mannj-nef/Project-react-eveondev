@@ -1,12 +1,8 @@
 import React from "react";
-import { useController } from "react-hook-form";
+import { useField } from "formik";
 
-const RadioHook = ({ control, label, ...props }) => {
-  const { field } = useController({
-    control,
-    name: props.name,
-    defaultValue: props.value,
-  });
+const RadioFormik = ({ label, ...props }) => {
+  const [field] = useField(props);
   return (
     <label className="flex items-center gap-3">
       <input
@@ -21,4 +17,4 @@ const RadioHook = ({ control, label, ...props }) => {
   );
 };
 
-export default RadioHook;
+export default RadioFormik;
